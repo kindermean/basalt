@@ -1,57 +1,238 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset = "UTF-8"> 
-        <meta name = "author" content="Илья">
-        <meta name = "description" content="Тестовая страница">
-        <meta name = "keywords" content="тест, страница, html"> 
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Музычка</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #0f172a;
+            /* Фон с градиентом для красоты стекла */
+            background-image: 
+                radial-gradient(circle at 15% 15%, #4f46e5 0%, transparent 25%),
+                radial-gradient(circle at 85% 85%, #db2777 0%, transparent 25%);
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+        }
 
-        <title data-rh='true'>Авито — Объявления на сайте Авито</title>
-        <title>Главная страница</title>
-    </head>
-    <!-- КОММЕНТ -->
-    <body>
-               <h1><strike>Заголовок1</strike></h1> <!-- Зачеркнутый текст-->
-        <h2>Заголовок2</h2>
-        <h3><small>Заголовок</small>3</h3> <!-- Мелкий текст -->
-        <h4>Заголовок4</h4>
-        <h5>Заголовок<big>5</big></h5> <!-- Большой текст -->
-        <h6>Заголовок6</h6>
+        .player-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
 
-       <pre>function some() { <!-- Код JavaScript -->
-            console.log("Hello, world!");
-        } </pre>    
+        h1 {
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            opacity: 0.8;
+        }
 
-            <code> let x = 5;</code> <!-- Код JavaScript в строке -->
+        /* Стеклянная кнопка */
+        .glass-btn {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            outline: none;
+        }
 
+        /* Иконка Play (треугольник) */
+        .icon {
+            width: 0;
+            height: 0;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            border-left: 25px solid white;
+            margin-left: 8px;
+            transition: 0.3s;
+        }
 
-       <p>ПРосто <b>текст</b></p> <!-- Жирный текст -->
-       <p>Просто <em>текст</em></p> <!--Курсив-->
-       
-       H<sub>2</sub>O <!-- Нижний индекс -->
-       <p>a<sup>2</sup></p> <!-- Верхний индекс -->
-    <hr> <!-- Горизонтальная линия -->  
-       say hello<br> <!-- Перенос строки -->
+        /* Класс для изменения иконки на паузу */
+        .is-playing .icon {
+            border: none;
+            width: 20px;
+            height: 30px;
+            border-left: 6px solid white;
+            border-right: 6px solid white;
+            margin-left: 0;
+        }
 
-        <abbr title="Это просто текст">HTML</abbr> <!-- Аббревиатура с подсказкой -->
-        <address>123 Main Street, Anytown, USA</address> <!-- Адрес -->
+        .glass-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
 
+        .glass-btn:active {
+            transform: scale(0.9);
+            box-shadow: inset 0 5px 10px rgba(0,0,0,0.4);
+        }
 
-        <ol start="1" type="A"> <!-- Нумерованный список, начинающийся с 3 и использующий заглавные буквы -->
-            <li>Купить хлеб</li>
-            <li>Купить молоко</li>
-            <li>Купить <em>яйца</em></li>
-            <li>Купить перчатки</li> 
-        </ol>
+        .button-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
 
-        <ul type="circle"> <!-- Невыделенный список с квадратными маркерами -->
-            <li>Пункт 1</li>
-            <li>Пункт 2</li>
-            <li>Пункт 3</li>
-        </ul>
+        .artist-label {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+        }
 
-        <img src="image.png" alt="фото"> <!-- Изображение с атрибутами alt, width, height и title -->
-        <img src="https://m.media-amazon.com/images/I/611xJ15aOeL._AC_SX679_.jpg" alt="фото"
+        /* Анимация свечения при игре */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.2); }
+            70% { box-shadow: 0 0 0 30px rgba(255, 255, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+        }
+
+        .active-pulse {
+            animation: pulse 2s infinite;
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        #status {
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 20px;
+            font-size: 0.8rem;
+        }
+
+        .progress-container {
+            width: 260px;
+            height: 10px;
+            margin: 20px auto 0;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 999px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-filled {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #8b5cf6, #ec4899);
+            transition: width 0.1s linear;
+        }
+
+        .progress-time {
+            margin-top: 12px;
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="player-card">
+        <h1>Музычка</h1>
         
-    </body>
-</html> 
+        <div class="button-row">
+            <button class="glass-btn" id="mainButton">
+                <div class="icon" id="btnIcon"></div>
+            </button>
+            <span class="artist-label">твой любимый артист</span>
+        </div>
+
+        <p id="status">Нажми, чтобы послушать</p>
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-filled" id="progressFilled"></div>
+        </div>
+        <p class="progress-time" id="progressTime">00:00 / 00:00</p>
+    </div>
+
+    <audio id="audioTrack">
+        <source src="BandLabSong.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const btn = document.getElementById('mainButton');
+        const audio = document.getElementById('audioTrack');
+        const status = document.getElementById('status');
+
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFilled = document.getElementById('progressFilled');
+        const progressTime = document.getElementById('progressTime');
+
+        btn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                btn.classList.add('is-playing', 'active-pulse');
+                status.innerText = "Сейчас играет...";
+            } else {
+                audio.pause();
+                btn.classList.remove('is-playing', 'active-pulse');
+                status.innerText = "Пауза";
+            }
+        });
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function updateProgress() {
+            const percent = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+            progressFilled.style.width = `${percent}%`;
+            progressTime.innerText = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration || 0)}`;
+        }
+
+        function setProgress(event) {
+            const rect = progressContainer.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            const percentage = Math.max(0, Math.min(clickX / rect.width, 1));
+            audio.currentTime = percentage * audio.duration;
+        }
+
+        progressContainer.addEventListener('click', (event) => {
+            if (!audio.duration) return;
+            setProgress(event);
+        });
+
+        let isDragging = false;
+        progressContainer.addEventListener('mousedown', () => { isDragging = true; });
+        document.addEventListener('mouseup', () => { isDragging = false; });
+        document.addEventListener('mousemove', (event) => {
+            if (!isDragging || !audio.duration) return;
+            setProgress(event);
+        });
+
+        audio.addEventListener('timeupdate', updateProgress);
+        audio.addEventListener('loadedmetadata', updateProgress);
+
+        audio.onended = () => {
+            btn.classList.remove('is-playing', 'active-pulse');
+            status.innerText = "Завершено";
+            updateProgress();
+        };
+    </script>
+
+</body>
+</html>
